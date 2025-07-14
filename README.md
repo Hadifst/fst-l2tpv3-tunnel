@@ -22,7 +22,7 @@ A fully automated interactive script to create a **Layer 3 IP-over-IP tunnel** b
 Run this on your **Iranian or foreign server**:
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/Hadifst/fst-l2tpv3-tunnel/main/fst-l2tpv3_menu.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/Hadifst/fst-l2tpv3-tunnel/main/fst-l2tpv3.sh)
 ```
 🧠 _The script will ask:_
 - Is this an Iranian server?
