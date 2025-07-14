@@ -28,7 +28,7 @@ echo "🔧 Removing any existing tunnel (if exists)..."
 ip l2tp del session tunnel_id 1000 session_id 2000 2>/dev/null
 ip l2tp del tunnel tunnel_id 1000 2>/dev/null
 
-echo "🚧 Creating new L2TPv3 tunnel between $LOCAL_IP ↔ $REMOTE_IP ..."
+echo "🚧 Creating new L2TPv3 tunnel from $LOCAL_IP to $REMOTE_IP ..."
 ip l2tp add tunnel tunnel_id 1000 peer_tunnel_id 1000 encap ip local $LOCAL_IP remote $REMOTE_IP
 ip l2tp add session tunnel_id 1000 session_id 2000 peer_session_id 2000
 ip link add name $INTERFACE type l2tpeth session_id 2000
@@ -92,4 +92,5 @@ systemctl daemon-reload
 systemctl enable l2tp-tunnel.service
 
 echo "✅ L2TPv3 tunnel setup complete! Tunnel will reconnect automatically after reboot."
+
 
