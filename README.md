@@ -23,3 +23,34 @@ Run this on your **Iranian or foreign server**:
 
 ```bash
 bash <(curl -Ls https://raw.githubusercontent.com/Hadifst/fst-l2tpv3-tunnel/main/fst-l2tpv3.sh)
+```
+🧠 _The script will ask:_
+- Is this an Iranian server?
+- Foreign and local IPs?
+
+Then it will setup the L2TPv3 tunnel with route switching and auto-reconnect.
+
+---
+
+## 📡 Usage Scenario
+
+Example:  
+You have a Marzban panel on an Iranian server (`151.x.x.x`) and want to route traffic via a foreign IP (`45.x.x.x`).
+
+Client sees only the clean foreign IP — but real traffic reaches Iran.
+
+---
+
+## 📦 Requirements
+
+- Two Linux servers (Ubuntu 20+)
+- Public IPv4 on both
+- Root access (sudo)
+
+---
+
+## 💡 Developed by
+
+**FST Team**  
+Telegram: [@deusvpn](https://t.me/deusvpn)  
+GitHub: [Hadifst](https://github.com/Hadifst)
