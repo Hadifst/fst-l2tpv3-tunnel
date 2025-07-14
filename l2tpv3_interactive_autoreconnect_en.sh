@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 echo "🔰 Interactive L2TPv3 Tunnel Setup Between Local and Foreign Server"
@@ -41,22 +40,20 @@ ping -c 2 $TUN_DST_IP
 
 if [[ "$IS_IR" == "y" || "$IS_IR" == "Y" ]]; then
   echo "📡 Setting default route via tunnel while keeping SSH route for $SSH_SRC_IP..."
-  ip route del default
-  ip route add $SSH_SRC_IP/32 via $IP_IR dev eth0
+  SSH_IFACE=$(ip route get $SSH_SRC_IP | awk '{print $5; exit}')
+  SSH_GW=$(ip route get $SSH_SRC_IP | awk '/via/ {print $3; exit}')
+  ip route add $SSH_SRC_IP/32 via $SSH_GW dev $SSH_IFACE
+  ip route del default || true
   ip route add default via $TUN_DST_IP dev $INTERFACE
 fi
-
-# --- AUTO RECONNECT SERVICE SETUP ---
 
 echo "⚙️ Creating reconnect script..."
 cat <<EOF > /usr/local/bin/l2tpv3-reconnect.sh
 #!/bin/bash
 INTERFACE="l2tpeth0"
 SSH_SRC_IP="\$(who | awk '{print \\$5}' | tr -d '()' | head -n1)"
-
 ip l2tp del session tunnel_id 1000 session_id 2000 2>/dev/null
 ip l2tp del tunnel tunnel_id 1000 2>/dev/null
-
 ip l2tp add tunnel tunnel_id 1000 peer_tunnel_id 1000 encap ip local $LOCAL_IP remote $REMOTE_IP
 ip l2tp add session tunnel_id 1000 session_id 2000 peer_session_id 2000
 ip link add name \$INTERFACE type l2tpeth session_id 2000
@@ -64,8 +61,10 @@ ip link set \$INTERFACE up
 ip addr add $TUN_SRC_IP/30 dev \$INTERFACE
 
 if [[ "$IS_IR" == "y" || "$IS_IR" == "Y" ]]; then
-  ip route del default
-  ip route add \$SSH_SRC_IP/32 via $IP_IR dev eth0
+  SSH_IFACE=\$(ip route get \$SSH_SRC_IP | awk '{print \\$5; exit}')
+  SSH_GW=\$(ip route get \$SSH_SRC_IP | awk '/via/ {print \\$3; exit}')
+  ip route add \$SSH_SRC_IP/32 via \$SSH_GW dev \$SSH_IFACE
+  ip route del default || true
   ip route add default via $TUN_DST_IP dev \$INTERFACE
 fi
 EOF
@@ -93,3 +92,4 @@ systemctl daemon-reload
 systemctl enable l2tp-tunnel.service
 
 echo "✅ L2TPv3 tunnel setup complete! Tunnel will reconnect automatically after reboot."
+
